@@ -69,6 +69,7 @@ simple,facile à tester.
 
 Ce post est juste une introduction à spring data, une petite ouverture sur ce qu'il est possible de faire avec. Je vous prépare bientôt 
 une série de tutoriels pour sa prise en main, on est ensemble ;)
+
 Mais déjà, voici une liste de ressources pour en savoir plus sur ce magnifique projet :
 
 [spring data doc](http://docs.spring.io/spring-data/jpa/docs/1.7.0.RELEASE/reference/html/),
