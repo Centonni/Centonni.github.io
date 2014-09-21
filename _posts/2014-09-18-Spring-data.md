@@ -62,7 +62,7 @@ méthodes basique de CRUD sont intégrés dans l'api de spring data, ce qui expl
 maintenant.
 
 Grosso modo, spring data permet d'éviter les codes répétitifs ds DAO,écrire facilement des requêtes d'accès aux données complexe, 
-permet une bonne gestion de la pagination et surtout, facilite la vie des développeurs avec un peu de magie en rendant l code plus 
+permet une bonne gestion de la pagination et surtout, facilite la vie des développeurs avec un peu de magie en rendant le code plus 
 simple,facile à tester.
 
 ## Conclusion
