@@ -2,22 +2,21 @@
 layout: default
 ---
 
-<!-- Whitespace added for readability -->
 {% assign m = page.date | date: "%-m" %}
 {{ page.date | date: "%-d" }}
 {% case m %}
-  {% when '1' %}Januar
-  {% when '2' %}Februar
-  {% when '3' %}M&auml;rz
-  {% when '4' %}April
+  {% when '1' %}Janvier
+  {% when '2' %}Février
+  {% when '3' %}Mars     
+  {% when '4' %}Avril
   {% when '5' %}Mai
-  {% when '6' %}Juni
-  {% when '7' %}Juli
-  {% when '8' %}August
+  {% when '6' %}Juin
+  {% when '7' %}Juillet
+  {% when '8' %}Aout  
   {% when '9' %}Septembre
-  {% when '10' %}Oktober
-  {% when '11' %}November
-  {% when '12' %}Dezember
+  {% when '10' %}Octobre
+  {% when '11' %}Novembre
+  {% when '12' %}Decembre
 {% endcase %}
 {{ page.date | date: "%Y" }}
 
@@ -32,18 +31,18 @@ layout: default
     Publié le {% assign m = page.date | date: "%-m" %}
 {{ page.date | date: "%-d" }}
 {% case m %}
-  {% when '1' %}Januar
-  {% when '2' %}Februar
-  {% when '3' %}M&auml;rz
-  {% when '4' %}April
+  {% when '1' %}Janvier
+  {% when '2' %}Février
+  {% when '3' %}Mars
+  {% when '4' %}Avril
   {% when '5' %}Mai
-  {% when '6' %}Juni
-  {% when '7' %}Juli
-  {% when '8' %}August
+  {% when '6' %}Juin
+  {% when '7' %}Juillet
+  {% when '8' %}Aout
   {% when '9' %}Septembre
-  {% when '10' %}Oktober
-  {% when '11' %}November
-  {% when '12' %}Dezember
+  {% when '10' %}Octobre
+  {% when '11' %}Novembre
+  {% when '12' %}Decembre
 {% endcase %}
 {{ page.date | date: "%Y" }}
   </div>

@@ -1,82 +1,21 @@
+---
+layout: null
+---
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Komi Innocent</title>
-    <description>Développeur d'applications</description>
-    <link>http://www.centonni.com</link>
-    <atom:link href="http://www.centonni.com/feed.xml" rel="self" type="application/rss+xml" />
-    
+    <title>{{ site.name | xml_escape }}</title>
+    <description>{{ site.description | xml_escape }}</description>
+    <link>{{ site.url }}</link>
+    <atom:link href="{{ site.url }}/feed.xml" rel="self" type="application/rss+xml" />
+    {% for post in site.posts limit:10 %}
       <item>
-        <title>Accès simplifié aux données avec Spring data</title>
-        <description>&lt;h3 id=&quot;prsentation-de-spring-data&quot;&gt;Présentation de spring data&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;http://projects.spring.io/spring-data&quot;&gt;Spring data&lt;/a&gt; est un projet cadre dont le but est de réduire la complexité des couches d’accès 
-aux données.Il contient un &lt;a href=&quot;http://projects.spring.io/spring-data/#toc_0&quot;&gt;portfolio de projets&lt;/a&gt; 
-permettant d’adresser au mieux chaque type de base de données, allant des bases de données relationnelles à ceux de la mouvance NoSql. 
-Il permet notamment de s’affranchir de l’implémentation du pattern 
-&lt;a href=&quot;http://fr.wikipedia.org/wiki/Objet_d'acc%C3%A8s_aux_donn%C3%A9es&quot;&gt;DAO&lt;/a&gt; utilisé dans la plupart des projets pour encapsuler l’accés aux 
-données.&lt;/p&gt;
-
-&lt;h3 id=&quot;le-problme-avec-les-daohttpwwworaclecomtechnetworkjavadataaccessobject-138824html&quot;&gt;Le problème avec les &lt;a href=&quot;http://www.oracle.com/technetwork/java/dataaccessobject-138824.html&quot;&gt;DAO&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;Alors, c’est bien beau, on veut s’affranchir de l’implémentation des DAO, mais quel est au juste le problème avec les DAO et dont 
-spring data nous offre la solution? Eh bien si vous avez jamais développé une application avec accès aux bases de données, vous avez 
-sans doute souffert de l’écriture des méthodes permettant d’effectuer des opérations sur les bases de données, les fameux CRUD 
-(Create,Read,Update,Delete), des plus simples au plus complexes. Pour chaque entité(représentant une table dans la base de données), il faut 
-écrire les méthodes d’accés au bases qui pour la plupart à des différences près se ressemblent toutes. Ce qui fait qu’un des problèmes 
-majeur au niveau des DAO est le code répétitif que celà implique.&lt;/p&gt;
-
-&lt;p&gt;Un exemple de DAO :&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Speaker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;findAll&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;em&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createQuery&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;select s from Speaker s&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-				 &lt;span class=&quot;n&quot;&gt;Speaker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getResultList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Speaker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;findByLastname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lastname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pageSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;TypedQuery&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Speaker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;query&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;em&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createQuery&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;select s from Speaker s &lt;/span&gt;
-&lt;span class=&quot;s&quot;&gt;				where s.lastname = ?1&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Speaker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-        &lt;span class=&quot;n&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setParameter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lastname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setFirstResult&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;page&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pageSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setMaxResults&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pageSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getResultList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Cet exemple est tiré du code présenté lors de ma présentation de spring data lors du &lt;a href=&quot;http://jcertif.com/cotedivoire/&quot;&gt;JCertif Abidjan 2014&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;la-solution-de-spring-data&quot;&gt;La solution de spring data&lt;/h2&gt;
-&lt;p&gt;Dans l’exemple précédent,à part les requêtes d’interrogation de la base de données, le traitement est pareil 
-quelque soit la méthode d’accès aux données: récupération des résultats de la requêtes, traitements(pagination et autre..) retour du 
-résultat. Dans une moindre mesure les requêtes aussi peuvent comporter des parties redondantes mis à part les noms des entités. Et 
-lorsque les requêtes deviennent de plus en plus complexe,le développeur perd du temps sur le code d’accés aux données que de 
-se concentrer sur la logique métier de son application.&lt;/p&gt;
-
-&lt;p&gt;Avec spring data, le code présenté plus haut revient à ceci:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SpeakerRepository&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CrudRepository&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Speaker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Page&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Speaker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;findByLastname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lastname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Pageable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pageable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Euh…c’est tout? Vous vous demandez sûrement si je me moque de vous n’est-ce pas? En fait, c’est tout, spring data nous permet de 
-faire abstraction de l’implémentation de nos DAO, c’est là toute la magie de spring data, il s’occupe de générer le code pour nous!Les 
-méthodes basique de CRUD sont intégrés dans l’api de spring data, ce qui explique que nous ayons juste une seule méthode dans le code 
-maintenant.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-&lt;p&gt;Ce post est juste une introduction à spring data, une petite ouverture sur ce qu’il est possible de faire avec. Je vous prépare bientôt 
-une série de tutoriels pour sa prise en main, on est ensemble ;)
-Mais déjà, voici une liste de ressources pour en savoir plus sur ce magnifique projet :&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://docs.spring.io/spring-data/jpa/docs/1.7.0.RELEASE/reference/html/&quot;&gt;spring data doc&lt;/a&gt;,
-&lt;a href=&quot;http://spring.io/guides/gs/accessing-data-jpa/&quot;&gt;spring data guide&lt;/a&gt;,
-&lt;a href=&quot;https://github.com/Centonni/jcertif2014-spring-data&quot;&gt;ma présenation sur github&lt;/a&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Thu, 18 Sep 2014 00:00:00 +0000</pubDate>
-        <link>http://www.centonni.com/Spring-data/</link>
-        <guid isPermaLink="true">http://www.centonni.com/Spring-data/</guid>
+        <title>{{ post.title | xml_escape }}</title>
+        <description>{{ post.content | xml_escape }}</description>
+        <pubDate>{{ post.date | date: "%a, %d %b %Y %H:%M:%S %z" }}</pubDate>
+        <link>{{ site.url }}{{ post.url }}</link>
+        <guid isPermaLink="true">{{ site.url }}{{ post.url }}</guid>
       </item>
-    
+    {% endfor %}
   </channel>
 </rss>

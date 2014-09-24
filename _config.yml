@@ -3,7 +3,7 @@
 #
 
 # Name of your site (displayed in the header)
-name: Komi Innocent
+name: Komi Serge Innocent
 
 # Short bio or description (displayed in the header)
 description: Développeur d'applications
@@ -17,15 +17,16 @@ avatar: http://www.gravatar.com/avatar/0f6e262f82d057e17d5faa2aaf4a9a50.png
 
 # Includes an icon in the footer for each username you enter
 footer-links:
+  license: ok
   dribbble: 
-  email: komi.innocent@gmail.com
+  email: #komi.innocent@gmail.com
   facebook: 
   flickr: 
   github: Centonni
   instagram: 
   linkedin: 
   pinterest: 
-  rss: soyez les premiers informés!!
+  rss: ok
   twitter: Centonni
   stackoverflow: #users/2529828/centonni
 
@@ -37,7 +38,7 @@ google_analytics: UA-50638672-1
 
 # Your website URL (e.g. http://barryclark.github.io or http://www.barryclark.co)
 # Used for Sitemap.xml and your RSS feed
-url: http://www.centonni.com
+url: http://centonni.com
 
 # If you're hosting your site at a Project repository on GitHub pages 
 # (http://yourusername.github.io/repository-name)
