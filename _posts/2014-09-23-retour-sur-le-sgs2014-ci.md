@@ -3,7 +3,7 @@ layout: post
 title: Retour sur le social good summit 2014 à Abidjan 
 --- 
 
-Le 22 septembre 2014 s'est tenu à Abidjan le social good summit 2014, rencontre organisée par le pnud en partenariat avec akendewa 
+Le 22 septembre 2014 s'est tenu à Abidjan,à l'espace évènementiel Latrille event des deux plateaux, le social good summit 2014, rencontre organisée par le pnud en partenariat avec akendewa 
 et des organisations de la jeunesse de Côte d'Ivoire, à laquelle j'étais présent en tant que représentant du [GDG MIAGE 
 GI](https://sites.google.com/site/gdgmiagegi/presentation), j'en ai profité auss pour parler de [Ovillage](https://ovillage.ci), un 
 tiers-lieu que je fréquente plus ou moins régulièrement :smile:.Je me propose donc de vous faire un résumé de cette journée, comme si vous y 
