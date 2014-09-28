@@ -45,7 +45,11 @@ layout: default
   {% when '12' %}Decembre
 {% endcase %}
 {{ page.date | date: "%Y" }}
-  </div>
+<hr/>
+<span><a href="https://twitter.com/share" class="twitter-share-button" data-via="Centonni">Tweet</a></span>
+<g:plusone size="medium"></g:plusone>
+<span class="fb-like" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count" data-action="recommend" data-show-faces="false" data-share="true"></span>  
+</div>
 
   {% include disqus.html disqus_identifier=page.disqus_identifier %}
 </article>
