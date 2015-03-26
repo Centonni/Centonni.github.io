@@ -1,6 +1,9 @@
 ---
 layout: post
 title: Plan d'action pour la sécurité cybernétique
+categories: [general, sécurité, cours]
+tags: [sécurité, cybercriminalité, sécurité informatique]
+fullview: false
 ---
 En parcourant mes fichiers sur mon disque dur, je suis tombé sur ce document que j'ai écrit dans le cadre d'un devoir pour un cours de sécurité informatique que j'ai suivi au sein de l'[ucao-uut](http://ucao-uut.tg).
 Il fallait proposer un plan d'action pour assurer la sécurité cybernétique du Togo.

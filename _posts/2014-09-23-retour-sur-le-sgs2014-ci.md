@@ -1,6 +1,8 @@
 --- 
 layout: post 
 title: Retour sur le social good summit 2014 à Abidjan 
+categories: [social, evènement, leadership]
+tags: [bien social, civsocial, akendewa, autonomisation des femmes,internet]
 --- 
 
 Le 22 septembre 2014 s'est tenu à Abidjan,à l'espace évènementiel Latrille event des deux plateaux, le social good summit 2014, rencontre organisée par le pnud en partenariat avec akendewa 

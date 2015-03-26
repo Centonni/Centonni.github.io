@@ -1,6 +1,8 @@
 ---
 layout: post
 title: Accès simplifié aux données avec Spring data
+categories: [tutoriel, cours]
+tags: [java, spring, spring data,base de données,dao]
 ---
 ### Présentation de spring data
 [Spring data](http://projects.spring.io/spring-data) est un projet cadre dont le but est de réduire la complexité des couches d'accès 
