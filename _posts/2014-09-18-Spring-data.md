@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Accès simplifié aux données avec Spring data
-categories: [tutoriel, cours]
+categories: [tutoriel, cours, spring, java]
 tags: [java, spring, spring data,base de données,dao]
 ---
 ### Présentation de spring data
