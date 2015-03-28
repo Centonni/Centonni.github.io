@@ -112,4 +112,4 @@ chaine.join(list);
  
 ###Conclusion
 
-Les nouveux ajouts pour la manipulation des chaînes de caractères en java sont assez intéressants, bien qu'à mon avis beaucoup plus aurait pu être fait, l'utilisation de **StringJoiner** me laisse toujours avec un goût d'inachevé...je ne sais pas trop pourquoi :/ 
+Les nouveaux ajouts pour la manipulation des chaînes de caractères en java sont assez intéressants, bien qu'à mon avis beaucoup plus aurait pu être fait, l'utilisation de **StringJoiner** me laisse toujours avec un goût d'inachevé...je ne sais pas trop pourquoi :/ 
