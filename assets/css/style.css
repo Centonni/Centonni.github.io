@@ -141,6 +141,7 @@ article.home h4 a:hover {
 footer {
 	padding-top: 15px;
 	font-family: 'Ubuntu';
+	text-align: center;
 }
 
 /* nav-vertical-tabs component */
