@@ -4,7 +4,7 @@ title: 20 ans déjà!! découvrez l'histoire de java en images!!
 categories: [java]
 tags: [java, java8]
 ---
-Ce mois qui s'achève en plus de me permettre d'ajouter une année supplémentaire à mon compteur vieillesse est aussi l'occasion pour java, un langage que j'apprécie beaucoup et que j'utilise tous les jours depuis 6 ans maintenant de souffler une bougie de plus!
+Ce mois qui s'achève, en plus de me permettre d'ajouter une année supplémentaire à mon compteur vieillesse est aussi l'occasion pour java, un langage que j'apprécie beaucoup et que j'utilise tous les jours depuis 6 ans maintenant de souffler une bougie de plus!
 
 Découvrez en image l'histoire de java depuis ses balbutiements(environ une trentaine de développeurs java en 1995) à la maturité et popularité(plus de 9 millions de développeurs java) qu'elle connaît aujourd'hui!
 
