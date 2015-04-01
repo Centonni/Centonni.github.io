@@ -20,7 +20,7 @@ String separateur=",";
 String un="un";
 String deux="deux";
 String trois="trois";
-	
+
 String chaine=prefixe+un+separateur+deux+separateur+trois+suffixe;
 
 System.out.println(chaine); //affiche {un,deux,trois}
@@ -37,9 +37,9 @@ Toujours avec le même exemple, nous allons utiliser la classe **StringBuilder**
 StringBuilder chaine = new StringBuilder();
 
 chaine.append("{")
-      .append("un")	
+      .append("un")
       .append(",")
-      .append("deux") 
+      .append("deux")
       .append(",")
       .append("trois")
       .append("}");
@@ -48,7 +48,7 @@ System.out.println(chaine.toString()); //affiche {un,deux,trois}
 
 {% endhighlight %}
 
-L'utilisation de  **StringBuilder** ne change pas grand chose par rapport à l'exemple précédent sinon de réduire la création d'instances de la classe **String**. 
+L'utilisation de  **StringBuilder** ne change pas grand chose par rapport à l'exemple précédent sinon de réduire la création d'instances de la classe **String**.
 
 ### Les apports de java 8 : la classe String
 La classe **String** a été dotée de deux méthodes statiques qui permettent de facilement effectuer la concaténation de chaine de caractères.
@@ -74,7 +74,7 @@ StringJoiner chaine = new StringJoiner(",", "{", "}");
 /*On ajoute les différents éléments de notre chaîne*/
 chaine.add("un")
       .add("deux")
-      .add("trois"); 
+      .add("trois");
 
 System.out.println(chaine.toString()); //affiche {un,deux,trois}
 
@@ -92,24 +92,24 @@ StringJoiner joiner = new StringJoiner(",", "{", "}");
 
 for (String str : list) {
    joiner.add(str);
- } 
- 
+ }
+
 String chaine=joiner.toString();
 
 {% endhighlight %}
 
 Cette méthode nous demande de parcourir la liste d'élément et les ajouter un par un à pour être concaténés.Il aurait été intéressant d'avoir une méthode dans la classe **StringBuilder** qui permette d'ajouter directement une liste de chaine à concaténer un peu comme celle-ci, à la manière de la méthode **join** de la classe **String** :
 
-{% highlight java %} 
+{% highlight java %}
 /*Ce qui est fait pour la classe String*/
 String chaine = String.join("- ", list);
 
 /*Ce qui aurait été intéressant  pour la classe StringJoiner*/
 StringJoiner chaine = new StringJoiner(",", "{", "}");
-chaine.join(list); 
+chaine.join(list);
 
 {% endhighlight %}
- 
+
 ###Conclusion
 
-Les nouveaux ajouts pour la manipulation des chaînes de caractères en java sont assez intéressants, bien qu'à mon avis beaucoup plus aurait pu être fait, l'utilisation de **StringJoiner** me laisse toujours avec un goût d'inachevé...je ne sais pas trop pourquoi :/ 
+Les nouveaux ajouts pour la manipulation des chaînes de caractères en java sont assez intéressants, bien qu'à mon avis beaucoup plus aurait pu être fait, l'utilisation de **StringJoiner** me laisse toujours avec un goût d'inachevé...je ne sais pas trop pourquoi :/

@@ -13,12 +13,12 @@ tagline:
 		{% case m %}
   			{% when '1' %}Janvier
   			{% when '2' %}Février
-  			{% when '3' %}Mars     
+  			{% when '3' %}Mars
   			{% when '4' %}Avril
   			{% when '5' %}Mai
   			{% when '6' %}Juin
   			{% when '7' %}Juillet
-  			{% when '8' %}Aout  
+  			{% when '8' %}Aout
   			{% when '9' %}Septembre
   			{% when '10' %}Octobre
   			{% when '11' %}Novembre
@@ -49,7 +49,7 @@ tagline:
 {% endfor %}
 <hr/>
 
-<ul class="pager"> 
+<ul class="pager">
 
   {% if paginator.previous_page %}
   <li class="previous">
@@ -64,7 +64,7 @@ tagline:
     <a>&larr; Posts récents</a>
   </li>
   {% endif %}
-  
+
   <li>
     <span class="page_number">Page: {{ paginator.page }} / {{ paginator.total_pages }}</span>
   </li>
@@ -75,7 +75,7 @@ tagline:
   </li>
   {% else %}
   <li class="next disabled">
-    <a>Anciens posts &rarr;</a>        
+    <a>Anciens posts &rarr;</a>
   </li>
   {% endif %}
 
