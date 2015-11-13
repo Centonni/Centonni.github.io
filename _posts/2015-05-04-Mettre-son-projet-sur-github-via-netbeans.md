@@ -2,6 +2,8 @@
 layout: post
 title: Héberger son projet sur github via netbeans
 date: "2015-05-04 13:53:52"
+categories: [tutoriel, cours, java]
+tags: [java, netbeans]
 ---
 
 On est en 2015 et si vous êtes un développeur, impossible d'y échapper, [github](https://github.com/) doit faire partie intégrante de votre boîte à outils tout comme les langages de programmation et les compilateurs.
