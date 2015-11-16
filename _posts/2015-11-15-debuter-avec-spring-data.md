@@ -86,7 +86,13 @@ public class Article {
     @ManyToOne
     private Categorie categorie;
 
-    public Article() {
+    protected Article() {
+    }
+
+    public Article(String designation, Double prix, Categorie categorie) {
+        this.designation = designation;
+        this.prix = prix;
+        this.categorie = categorie;
     }
 
     public Long getId() {
@@ -144,7 +150,11 @@ public class Categorie {
     private Long id;
     private String libele;
 
-    public Categorie() {
+    protected Categorie() {
+    }
+
+    public Categorie(String libele) {
+        this.libele = libele;
     }
 
     public Long getId() {
