@@ -22,6 +22,8 @@ Pour commencer nous allons créer un projet java sous **maven**. Les IDE actuels
 ### Modifier le fichier pom.xml pour ajouter les dépendances nécessaires
 Pour pouvoir utiliser **spring data** il nous faut ajouter la librairie correspondante dans nos dépendances et bien entendu intégrer le connecteur adéquat pour la base de donnée dans laquelle on souhaite sauvegarder les données. Pour notre exemple, nous allons utiliser **mysql** mais vous pouvez utiliser une autre base de données sans problème, **spring data** supporte la majorité des bases de données relationnelles.
 
+Aussi, le fichier de configuration doit ressembler à ce qui suit:
+
 {% highlight xml %}
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -31,6 +33,7 @@ Pour pouvoir utiliser **spring data** il nous faut ajouter la librairie correspo
   <version>0.0.1-SNAPSHOT</version>
   <name>Debuter avec spring data</name>
 
+    <!-- Spring boot pour l'ajout automatique des dépendances nécessaires et l'autoconfiguration -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -42,15 +45,124 @@ Pour pouvoir utiliser **spring data** il nous faut ajouter la librairie correspo
     </properties>
 
     <dependencies>
+        <!-- Spring data jpa -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+        <!-- Le connecteur mysql pour java -->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
     </dependencies>
 
 </project>
+{% endhighlight %}
+
+### Définir les classes entités
+Les classes entités sont les objets de notre application qui vont en fait devenir des tables dans notre base de données. Dans notre modèle, nous avons deux classes, **Article** et **Categorie**.
+
+La **classe Article** :
+
+{% highlight java %}
+
+package com.centonni.debutspringdata;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+@Entity
+public class Article {
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
+    private String designation;
+    private Double prix;
+    @ManyToOne
+    private Categorie categorie;
+
+    public Article() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public Double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(Double prix) {
+        this.prix = prix;
+    }
+
+    public Categorie getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(Categorie categorie) {
+        this.categorie = categorie;
+    }
+
+}
+
+{% endhighlight %}
+
+La **classe Categorie**
+
+{% highlight java %}
+
+package com.centonni.debutspringdata;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Categorie {
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
+    private String libele;
+
+    public Categorie() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getLibele() {
+        return libele;
+    }
+
+    public void setLibele(String libele) {
+        this.libele = libele;
+    }
+
+}
+
 {% endhighlight %}
