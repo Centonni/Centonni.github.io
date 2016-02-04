@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title><![CDATA[Komi Serge Innocent]]></title><description><![CDATA[Développeur java/java EE | Formateur pour @objisci | Enthousiaste de l'Open source et de l'économie du libre | All things about java,spring,groovy]]></description><link>http://localhost:2368/</link><generator>Ghost 0.7</generator><lastBuildDate>Thu, 04 Feb 2016 16:21:06 GMT</lastBuildDate><atom:link href="http://localhost:2368/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Débuter avec spring data]]></title><description><![CDATA[<p>Une partie essentielle pour toute application, quel que soit le langage utilisé est la gestion des données, entendez par là l'enregistrement, la récupération et tout traitement qui peut être effectué. <br>
+En java, vous avez <strong>l'API JDBC</strong> qui est une première couche pour l'accès aux base de données relationneles, ensuite vient</p>]]></description><link>http://localhost:2368/2015/11/15/debuter-avec-spring-data/</link><guid isPermaLink="false">08f47fab-dc90-407a-9052-741147fe7432</guid><category><![CDATA[spring]]></category><category><![CDATA[spring data]]></category><category><![CDATA[java]]></category><dc:creator><![CDATA[Komi Serge Innocent]]></dc:creator><pubDate>Sun, 15 Nov 2015 01:07:00 GMT</pubDate><content:encoded><![CDATA[<p>Une partie essentielle pour toute application, quel que soit le langage utilisé est la gestion des données, entendez par là l'enregistrement, la récupération et tout traitement qui peut être effectué. <br>
+En java, vous avez <strong>l'API JDBC</strong> qui est une première couche pour l'accès aux base de données relationneles, ensuite vient <strong>JPA</strong> qui apporte une couche d'abstraction nécessaire pour permettre de faire un mapping objet-relationnel entre nos objets java et la base de donnée! <br>
+Le but de cet article est de montrer comment utiliser <strong>Spring data JPA</strong>, une librairie qui facilite l'accès aux données et qui se positionne au dessus de <strong>JPA</strong>. J'en ai déjà fait une présentation dans <a href="http://centonni.com/Spring-data/">un article précédent</a>, aussi je vais ici montrer comment le mettre en oeuvre dans un projet!</p>
+
+<h3 id="leprojet">Le projet</h3>
+
+<p>Nous allons créer une application dont le but sera d'enregistrer des articles d'un magasin dans une base de donnée! Ci-après le diagramme de classe pour montrer un peu ce que seront nos objets métiers. <br>
+<img src="http://localhost:2368/content/images/2016/02/diagram.png" alt="Diagramme de classes"></p>
+
+<p>Vous l'aurez sans doute compris, ce n'est pas une application complète de gestion de stock que nous allons mettre sur pied mais juste un exemple pour vous permettre de débuter avec <strong>spring data</strong>.</p>
+
+<h3 id="crersonprojetsousmaven">Créer son projet sous maven</h3>
+
+<p>Pour commencer nous allons créer un projet java sous <strong>maven</strong>. Les IDE actuels vous offrent cette possibilité de choisir le type de projet que vous voulez créer alors, je suppose que là pas de soucis pour vous chers lecteurs ;)</p>
+
+<h3 id="modifierlefichierpomxmlpourajouterlesdpendancesncessaires">Modifier le fichier pom.xml pour ajouter les dépendances nécessaires</h3>
+
+<p>Pour pouvoir utiliser <strong>spring data</strong> il nous faut ajouter la librairie correspondante dans nos dépendances et bien entendu intégrer le connecteur adéquat pour la base de donnée dans laquelle on souhaite sauvegarder les données. Pour notre exemple, nous allons utiliser <strong>mysql</strong> mais vous pouvez utiliser une autre base de données sans problème, <strong>spring data</strong> supporte la majorité des bases de données relationnelles.</p>
+
+<p>Aussi, le fichier de configuration doit ressembler à ce qui suit:</p>
+
+<pre><code class="language-prettyprint">&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;com.centonni.&lt;/groupId&gt;
+  &lt;artifactId&gt;debut-spring-data&lt;/artifactId&gt;
+  &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+  &lt;name&gt;Debuter avec spring data&lt;/name&gt;
+
+    &lt;!-- Spring boot pour l'ajout automatique des dépendances nécessaires et l'autoconfiguration --&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;1.3.0.RELEASE&lt;/version&gt;
+    &lt;/parent&gt;
+
+    &lt;properties&gt;
+        &lt;java.version&gt;1.8&lt;/java.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;!-- Spring data jpa --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;!-- Le connecteur mysql pour java --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;mysql&lt;/groupId&gt;
+            &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+&lt;/project&gt;  
+</code></pre>
+
+<h3 id="dfinirlesclassesentits">Définir les classes entités</h3>
+
+<p>Les classes entités sont les objets de notre application qui vont en fait devenir des tables dans notre base de données. Dans notre modèle, nous avons deux classes, <strong>Article</strong> et <strong>Categorie</strong>.</p>
+
+<p>La <strong>classe Article</strong> :</p>
+
+<pre><code class="language-prettyprint">package com.centonni.debutspringdata;
+
+import javax.persistence.Entity;  
+import javax.persistence.GeneratedValue;  
+import javax.persistence.GenerationType;  
+import javax.persistence.Id;  
+import javax.persistence.ManyToOne;
+
+@Entity
+public class Article {
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
+    private String designation;
+    private Double prix;
+    @ManyToOne
+    private Categorie categorie;
+
+    protected Article() {
+    }
+
+    public Article(String designation, Double prix, Categorie categorie) {
+        this.designation = designation;
+        this.prix = prix;
+        this.categorie = categorie;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public Double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(Double prix) {
+        this.prix = prix;
+    }
+
+    public Categorie getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(Categorie categorie) {
+        this.categorie = categorie;
+    }
+
+}
+</code></pre>
+
+<p>La <strong>classe Categorie</strong></p>
+
+<pre><code class="language-prettyprint">package com.centonni.debutspringdata;
+
+import javax.persistence.Entity;  
+import javax.persistence.GeneratedValue;  
+import javax.persistence.GenerationType;  
+import javax.persistence.Id;
+
+@Entity
+public class Categorie {
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
+    private String libele;
+
+    protected Categorie() {
+    }
+
+    public Categorie(String libele) {
+        this.libele = libele;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getLibele() {
+        return libele;
+    }
+
+    public void setLibele(String libele) {
+        this.libele = libele;
+    }
+
+}
+</code></pre>
+
+<p>Les classes <strong>Article et Categorie</strong> sont annotées avec <code>@Entity</code>, ceci pour indiquer à <strong>JPA</strong> que cette classe est une entité et sera donc crée dans la base de donnée comme une table.</p>
+
+<p>Les différents attributs de ces classes seront mappés par <strong>JPA</strong> pour devenir les champs des différentes tables qui seront crées dans la base de données.</p>
+
+<p>L'annotation <code>@Id</code> permet de préciser le champ qui sera l'identifiant de la table dans la base de données et <code>@GeneratedValue</code> permet de spécifier que l'identifiant devra être généré automatiquement.</p>
+
+<h3 id="configurerlabasededonnes">Configurer la base de données</h3>
+
+<p>Nous allons nous intéresser à la base de données maintenant, pour que notre application puisse se connecter à la base, nous devons lui fournir les informations d'accès (nom de la base, utilisateurs etc..).</p>
+
+<p>Pour ce faire nous allons créer un fichier nommé <code>application.properties</code>, il est à placer dans le répertoire de ressources (<code>src/main/resources</code>) de votre projet maven. Il devra avoir les valeurs ci-après:</p>
+
+<pre><code class="language-prettyprint">#chemin d'accès à la base de donnée
+spring.datasource.url=jdbc:mysql://localhost/demodata  
+#utilisateur de la base de données
+spring.datasource.username=root  
+#mot de passe de l'utilisateur de la base de données
+spring.datasource.password=root  
+</code></pre>
+
+<p>Et voilà, c'est tout ce qu'il nous faut pour configurer la base de données! <strong>spring boot</strong> que nous avons ajouté comme librairie dans les  dépendances de notre projet va se charger de toute la configuration permettant la communication avec la base de données, donc sur ce plan là, notre tâche est terminée.</p>
+
+<h3 id="crernosrequtesdinterrogationdelabasededonnes">Créer nos requêtes d'interrogation de la base de données</h3>]]></content:encoded></item><item><title><![CDATA[Un aperçu sur les Streams de java 8]]></title><description><![CDATA[<p>Chaque version de java apporte son lot de nouveautés et java 8 n'échappe pas à la règle, plus, cette dernière version en date bouleverse même java en cela qu'elle introduit un nouveau paradigme de programmation au sein du langage qu'est <a href="https://fr.wikipedia.org/wiki/Programmation_fonctionnelle">la programmation fonctionnelle</a>, autant dire un souffle nouveau pour java.</p>]]></description><link>http://localhost:2368/2015/09/17/un-apercu-sur-les-streams-de-java-8/</link><guid isPermaLink="false">5ddf4b40-28ff-4348-93ed-50d01cf3ab9a</guid><category><![CDATA[java]]></category><category><![CDATA[java8]]></category><category><![CDATA[Api Stream]]></category><dc:creator><![CDATA[Komi Serge Innocent]]></dc:creator><pubDate>Thu, 17 Sep 2015 11:16:00 GMT</pubDate><content:encoded><![CDATA[<p>Chaque version de java apporte son lot de nouveautés et java 8 n'échappe pas à la règle, plus, cette dernière version en date bouleverse même java en cela qu'elle introduit un nouveau paradigme de programmation au sein du langage qu'est <a href="https://fr.wikipedia.org/wiki/Programmation_fonctionnelle">la programmation fonctionnelle</a>, autant dire un souffle nouveau pour java.</p>
+
+<p>Ce billet va parler d'un des apports de java 8 que sont <strong><em>les Streams</em></strong> et qui croyez moi devraient grandement simplifier la vie des développeurs java et bien sûr être apprécié de bon nombre de développeurs habitués à des langages comme <strong><em>groovy</em></strong>,<strong><em>scala</em></strong> et autres <strong><em>langages à paradigme fonctionnels</em></strong></p>
+
+<h3 id="lesstreamsquestcequecest">Les streams, qu'est ce que c'est?</h3>
+
+<p>Les streams sont un ajout à la plateforme java depuis la version 8 qui permettent de manipuler des structures de données de manière déclarative, plutôt que d'écrire ou implémenter en dur un code pour le faire (impératif).Et en plus, ils permettent d'effectuer des tâches en parallèle de manière transparente sans pour autant avoir besoin de créer un processus dédié (<strong>Thread</strong>).</p>
+
+<p>Un bon bout de code vaut mieux que de longues explications n'est-ce pas? Alors supposons que pour une collection de noms donnée,</p>
+
+<ul>
+<li>serge</li>
+<li>Mathilda</li>
+<li>Noel</li>
+<li>Herman</li>
+<li>Rose</li>
+<li>Christian</li>
+</ul>
+
+<p>on souhaite récupérer une liste ordonnée de ceux qui contiennent la lettre <strong>a</strong>.</p>
+
+<p>Avec java 7</p>
+
+<pre><code class="language-prettyprint">List&lt;String&gt; list = Arrays.asList("serge","Mathilda","Noel", "Herman","Rose","Christian");
+
+List&lt;String&gt; listeFiltree=new ArrayList&lt;&gt;();  
+//on filtre la liste pour récupérer les noms contenant la lettre a (1)
+for(String s:list){  
+    if(s.contains("a")){
+        listeFiltree.add(s);
+    }
+}
+//on retourne une liste ordonnée
+Collections.sort(listeFiltree);
+</code></pre>
+
+<p>Et avec java 8</p>
+
+<pre><code class="language-prettyprint">List&lt;String&gt; list = Arrays.asList("serge","Mathilda","Noel", "Herman","Rose","Christian");
+
+List&lt;String&gt; listeFiltree==list.stream()  
+                                 .filter(d-&gt;d.contains("a"))
+                                 .sorted()
+                                 .collect(Collectors.toList());
+</code></pre>
+
+<h3 id="java7vsjava8">Java 7 vs Java 8</h3>
+
+<p>Les deux exemples qui précèdent permettent d'avoir le même résultat mais la version avec java 8 est plus élégante et tient en deux lignes!! <br>
+Mais ce n'est pas tant la réduction du nombre de lignes ou l'élégance de la présentation qui font la force des streams.L'API Stream permet en fait au développeur de spécifier ce qu'il attend sans dire <strong>comment</strong> le faire, c'est pareil en fait que d'écrire une requête sql! <br>
+Dans le cas de la version avec <strong>java 7</strong>, le développeur est dans l'obligation d'écrire lui même son algorithme pour arriver au résultat souhaité.</p>
+
+<h3 id="lemotdefin">Le mot de fin...</h3>
+
+<p>Alors ceci n'est qu'une présentation rapide de <strong>l'API Stream</strong>, nous ne sommes pas entrés en profondeur mais je vous prépare une série d'articles pour découvrir les possibilités immenses qu'elle offre!</p>]]></content:encoded></item><item><title><![CDATA[Héberger son projet sur github via netbeans]]></title><description><![CDATA[<p>On est en 2015 et si vous êtes un développeur, impossible d'y échapper, <a href="https://github.com/">github</a> doit faire partie intégrante de votre boîte à outils tout comme les langages de programmation et les compilateurs.</p>
+
+<h3 id="questcequegithub">Qu'est ce que github?</h3>
+
+<p>Github est un réseau social qui permet à ses utilisateurs de partager stocker et</p>]]></description><link>http://localhost:2368/2015/05/04/heberger-son-projet-sur-github-via-netbeans/</link><guid isPermaLink="false">7ad97ba4-60f2-4a49-a5ba-ff0b5aaf3fee</guid><category><![CDATA[git]]></category><category><![CDATA[netbeans]]></category><category><![CDATA[gestion de source]]></category><dc:creator><![CDATA[Komi Serge Innocent]]></dc:creator><pubDate>Mon, 04 May 2015 10:57:00 GMT</pubDate><media:content url="http://localhost:2368/content/images/2016/02/Capture-du-2016-02-04-11-08-48.png" medium="image"/><content:encoded><![CDATA[<img src="http://localhost:2368/content/images/2016/02/Capture-du-2016-02-04-11-08-48.png" alt="Héberger son projet sur github via netbeans"><p>On est en 2015 et si vous êtes un développeur, impossible d'y échapper, <a href="https://github.com/">github</a> doit faire partie intégrante de votre boîte à outils tout comme les langages de programmation et les compilateurs.</p>
+
+<h3 id="questcequegithub">Qu'est ce que github?</h3>
+
+<p>Github est un réseau social qui permet à ses utilisateurs de partager stocker et partager leurs travaux avec les autres utilisateurs, permettant à des personnes qui soit ne se connaissent pas, soit sont à des milliers de km de travailler sur un même projet. <br>
+Allez, je ne vais pas parler de github et de ses multiples fontionalités ici (peut-être le sujet d'un autre post), je vais vous montrer comment envoyer son premier projet sur github à partir de <a href="https://netbeans.org">netbeans</a>.</p>
+
+<h3 id="crerunprojetavecnetbeansetlhbergersurgithub">Créer un projet avec netbeans et l'héberger sur github</h3>
+
+<p>Je suppose que vous êtes familiers de netbeans, donc je vous laisse créer votre projet, peut importe le type (php,java,c ou c++). Après la création du projet, il faut initialiser un dépôt git local pour le projet, ce dépôt va permettre d'avoir un historique local des modifications apportées au projet.</p>
+
+<h3 id="initialiserundptlocalpourvotreprojet">Initialiser un dépôt local pour votre projet</h3>
+
+<p><img src="http://localhost:2368/content/images/2016/02/init-git-repo.png" alt="Héberger son projet sur github via netbeans"></p>
+
+<h3 id="ajoutervosmodificationslindexdegitetfaitevotrepremiercommit">Ajouter vos modifications à l'index de git et faite votre premier commit</h3>
+
+<p>Ajout des nouveaux fichiers à l'index de git</p>
+
+<p><img src="http://localhost:2368/content/images/2016/02/gir-add.png" alt="Héberger son projet sur github via netbeans" title=""></p>
+
+<p>Commit:sauvegarder l'état du projet dans git</p>
+
+<p><img src="http://localhost:2368/content/images/2016/02/git-commit.png" alt="Héberger son projet sur github via netbeans" title=""></p>
+
+<p>Message du commit</p>
+
+<p><img src="http://localhost:2368/content/images/2016/02/git-commit-msg.png" alt="Héberger son projet sur github via netbeans" title=""></p>
+
+<h3 id="crerunnouveaudptsurgithub">Créer un nouveau dépôt sur github</h3>
+
+<p>Si vous possédez un compte github, utilisez-le pour créer un nouveau repository, dans le cas contraire, créez un compte sur github afin de pouvoir héberger votre projet.</p>
+
+<p><img src="http://localhost:2368/content/images/2016/02/new-repo.png" alt="Héberger son projet sur github via netbeans" title=""></p>
+
+<h3 id="envoyervotreprojetsurgithub">Envoyer votre projet sur github</h3>
+
+<p>Les captures suivantes vous permettent d'envoyer votre projet sur github à partir de netbeans.</p>
+
+<p><img src="http://localhost:2368/content/images/2016/02/git-push.png" alt="Héberger son projet sur github via netbeans" title=""></p>
+
+<p>Vous devez préciser à ce niveau préciser l'url de votre dépôt, qui devrait être de la forme <strong><a href="https://[username]@github.com/[username]/[repository].git">https://[username]@github.com/[username]/[repository].git</a></strong></p>
+
+<p><img src="http://localhost:2368/content/images/2016/02/images/git-push-config.png" alt="Héberger son projet sur github via netbeans" title=""></p>
+
+<p>À la fin du processus vous devriez avoir ce message ci-dessous</p>
+
+<p><img src="http://localhost:2368/content/images/2016/02/git-finish.png" alt="Héberger son projet sur github via netbeans"></p>
+
+<p>Vous pouvez dès lors aller sur votre page github pour constater que votre projet est maintenant hébergé!!</p>]]></content:encoded></item><item><title><![CDATA[20 ans déjà!! découvrez l'histoire de java en images!!]]></title><description><![CDATA[<p>Ce mois qui s'achève, en plus de me permettre d'ajouter une année supplémentaire à mon compteur vieillesse est aussi l'occasion pour java, un langage que j'apprécie beaucoup et que j'utilise tous les jours depuis 6 ans maintenant de souffler une bougie de plus!</p>
+
+<p>Découvrez en image l'histoire de java depuis</p>]]></description><link>http://localhost:2368/2015/03/31/20-ans-deja-decouvrez-lhistoire-de-java-en-images/</link><guid isPermaLink="false">a71b6f2e-a5bf-4296-8132-0c6fa925dd8d</guid><category><![CDATA[java]]></category><category><![CDATA[java8]]></category><category><![CDATA[historique]]></category><dc:creator><![CDATA[Komi Serge Innocent]]></dc:creator><pubDate>Tue, 31 Mar 2015 10:55:00 GMT</pubDate><content:encoded><![CDATA[<p>Ce mois qui s'achève, en plus de me permettre d'ajouter une année supplémentaire à mon compteur vieillesse est aussi l'occasion pour java, un langage que j'apprécie beaucoup et que j'utilise tous les jours depuis 6 ans maintenant de souffler une bougie de plus!</p>
+
+<p>Découvrez en image l'histoire de java depuis ses balbutiements(environ une trentaine de développeurs java en 1995) à la maturité et popularité(plus de 9 millions de développeurs java) qu'elle connaît aujourd'hui!</p>
+
+<p>Allez tous en cœur, <strong>happy 20th birthday java!!!!</strong></p>
+
+<p><strong><a href="http://blog.exoplatform.com/2015/03/26/infographic-history-java-programming-language-happy-20th-birthday">Cette infographie est du blog eXo Platform:</a></strong></p>  
+
+<p><a href="http://blog.exoplatform.com/2015/03/26/infographic-history-java-programming-language-happy-20th-birthday"><img src="http://blog.exoplatform.com/wp-content/uploads/2015/03/Infographic-Java-language-20-years.png" alt="Infographic – eXo Wishes a Happy 20th Birthday to Java" width="650px" border="0"></a></p>  
+
+<p></p><p></p>]]></content:encoded></item><item><title><![CDATA[Concaténation de String avec java 8]]></title><description><![CDATA[<p>Il existe plusieurs méthodes pour effectuer la concaténation de chaînes de caractères avec java, mais depuis la version 8, java nous propose un nouveau moyen bien plus efficace pour le faire! <br>
+Je vais dans ce post vous présenter les méthodes existantes c'est à dire bien avant la sortie de java</p>]]></description><link>http://localhost:2368/2015/03/23/concatenation-de-string-avec-java-8/</link><guid isPermaLink="false">d26e57da-7975-4ac6-8226-d1c03910d68c</guid><category><![CDATA[java]]></category><category><![CDATA[java8]]></category><category><![CDATA[String]]></category><category><![CDATA[StringBuilder]]></category><category><![CDATA[StringJoiner]]></category><dc:creator><![CDATA[Komi Serge Innocent]]></dc:creator><pubDate>Mon, 23 Mar 2015 10:52:00 GMT</pubDate><content:encoded><![CDATA[<p>Il existe plusieurs méthodes pour effectuer la concaténation de chaînes de caractères avec java, mais depuis la version 8, java nous propose un nouveau moyen bien plus efficace pour le faire! <br>
+Je vais dans ce post vous présenter les méthodes existantes c'est à dire bien avant la sortie de java 8 et les nouveautés que java 8 apporte pour travailler avec les String.</p>
+
+<h3 id="utilisationdelaclassestring">Utilisation de la classe String</h3>
+
+<p>Supposons qu'on veuille formater une chaîne de caractère de la manière suivante : <strong>{un, deux , trois}</strong>. <br>
+Pour cette chaîne, on a préfixe "<strong>{</strong>" ,un suffixe " <strong>}</strong>", un séparateur "<strong>,</strong>" et les données. <br>
+En utilisant la classe <strong>String</strong> , On peut procéder comme suit :</p>
+
+<pre><code class="language-prettyprint">String prefixe="{";  
+String suffixe="}";  
+String separateur=",";  
+String un="un";  
+String deux="deux";  
+String trois="trois";
+
+String chaine=prefixe+un+separateur+deux+separateur+trois+suffixe;
+
+System.out.println(chaine); //affiche {un,deux,trois}
+</code></pre>
+
+<p>L'exemple ci-dessus nous permet d'arriver à nos fins, mais java dispose d'une autre classe qui permet de manipuler les chaînes de caractères.</p>
+
+<h3 id="utilisationdelaclassestringbuilder">Utilisation de la classe StringBuilder</h3>
+
+<p>Toujours avec le même exemple, nous allons utiliser la classe <strong>StringBuilder</strong> pour arriver à nos fins :</p>
+
+<pre><code class="language-prettyprint">StringBuilder chaine = new StringBuilder();
+
+chaine.append("{")  
+      .append("un")
+      .append(",")
+      .append("deux")
+      .append(",")
+      .append("trois")
+      .append("}");
+
+System.out.println(chaine.toString()); //affiche {un,deux,trois}
+</code></pre>
+
+<p>L'utilisation de  <strong>StringBuilder</strong> ne change pas grand chose par rapport à l'exemple précédent sinon de réduire la création d'instances de la classe <strong>String</strong>.</p>
+
+<h3 id="lesapportsdejava8laclassestring">Les apports de java 8 : la classe String</h3>
+
+<p>La classe <strong>String</strong> a été dotée de deux méthodes statiques qui permettent de facilement effectuer la concaténation de chaine de caractères. <br>
+En reprenant les exmples précédents, on aurait avec les nouvelle méthodes de la classe <strong>String</strong> :</p>
+
+<pre><code class="language-prettyprint">String chaine = "{" +  String.join(", ","un", "deux", "trois")  +  "}";  
+System.out.println(chaine); //affiche {un,deux,trois}
+</code></pre>
+
+<p>Alors ici, le code est un peux moins verbeux par rapport aux deux exemples précédents.La méthode <em>*la méthode statique <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#join-java.lang.CharSequence-java.lang.CharSequence...-">join</a> *</em> prend en paramètre le séparateur et la liste des éléments à concaténer. <br>
+La limite à ce niveau est qu'il n'y a pas de mécanisme pour lier de manière intrinsèque les délimiteurs de fin et de début pour la chaîne.</p>
+
+<h3 id="lesapportsdejava8laclassestringjoiner">Les apports de java 8 : la classe StringJoiner</h3>
+
+<p>La classe <a href="http://bit.ly/1F0C8Qw">StringJoiner</a>  nouvelle classe introduite dans java 8 est utilisée pour construire une séquence de caractères séparés par un séparateur et éventuellement commençant par un préfixe fourni et se terminant par le suffixe fourni. <br>
+En pratique , une solution à notre problème avec cette classe serait la suivante :</p>
+
+<pre><code class="language-prettyprint">/*Dans le constructeur, on précise le séparateur,le préfixe et le suffixe de notre chaîne*/
+StringJoiner chaine = new StringJoiner(",", "{", "}");  
+/*On ajoute les différents éléments de notre chaîne*/
+chaine.add("un")  
+      .add("deux")
+      .add("trois");
+
+System.out.println(chaine.toString()); //affiche {un,deux,trois}
+</code></pre>
+
+<p>Le code est toujours moins verbeux par rapport aux deux  premiers exemples.Le séparateur, le suffixe et le préfixe défini lors de l'instanciation de notre <strong>StringJoiner</strong> nous permettent de nous concentrer juste sur l'ajout des données,la séparation des données et l'ajout des délimiteurs de début et de fin sont gérés notre <strong>StringJoiner</strong>.</p>
+
+<h3 id="limitedelaclassestringjoiner">Limite de la classe StringJoiner</h3>
+
+<p>Ce nouvel ajout est des plus intéressant pour java mais on découvre vite les limites lorsqu'on veut l'utiliser à fond. Prenons un exemple simple, supposons qu'on veuille passer une liste de String à formatter, la méthode pour le faire est la suivante :</p>
+
+<pre><code class="language-prettyprint">/*Dans le constructeur, on précise le séparateur,le préfixe et le suffixe de notre chaîne*/
+StringJoiner joiner = new StringJoiner(",", "{", "}");
+
+for (String str : list) {  
+   joiner.add(str);
+ }
+
+String chaine=joiner.toString();
+</code></pre>
+
+<p>Cette méthode nous demande de parcourir la liste d'élément et les ajouter un par un à pour être concaténés.Il aurait été intéressant d'avoir une méthode dans la classe <strong>StringBuilder</strong> qui permette d'ajouter directement une liste de chaine à concaténer un peu comme celle-ci, à la manière de la méthode <strong>join</strong> de la classe <strong>String</strong> :</p>
+
+<pre><code class="language-prettyprint">/*Ce qui est fait pour la classe String*/
+String chaine = String.join("- ", list);
+
+/*Ce qui aurait été intéressant  pour la classe StringJoiner*/
+StringJoiner chaine = new StringJoiner(",", "{", "}");  
+chaine.join(list);
+</code></pre>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>Les nouveaux ajouts pour la manipulation des chaînes de caractères en java sont assez intéressants, bien qu'à mon avis beaucoup plus aurait pu être fait, l'utilisation de <strong>StringJoiner</strong> me laisse toujours avec un goût d'inachevé...je ne sais pas trop pourquoi :/</p>]]></content:encoded></item><item><title><![CDATA[Plan d'action pour la sécurité cybernétique]]></title><description><![CDATA[<p>En parcourant mes fichiers sur mon disque dur, je suis tombé sur ce document que j'ai écrit dans le cadre d'un devoir pour un cours de sécurité informatique que j'ai suivi au sein de l'<a href="http://ucao-uut.tg">ucao-uut</a>. <br>
+Il fallait proposer un plan d'action pour assurer la sécurité cybernétique du Togo.</p>
+
+<h3 id="prambule">Préambule</h3>]]></description><link>http://localhost:2368/2015/01/11/plan-daction-pour-la-securite-cybernetique/</link><guid isPermaLink="false">37e831b6-0110-4199-9a41-de7c78371de0</guid><category><![CDATA[sécurité]]></category><category><![CDATA[cybercriminalité]]></category><category><![CDATA[sécurité informatique]]></category><dc:creator><![CDATA[Komi Serge Innocent]]></dc:creator><pubDate>Sun, 11 Jan 2015 10:46:00 GMT</pubDate><content:encoded><![CDATA[<p>En parcourant mes fichiers sur mon disque dur, je suis tombé sur ce document que j'ai écrit dans le cadre d'un devoir pour un cours de sécurité informatique que j'ai suivi au sein de l'<a href="http://ucao-uut.tg">ucao-uut</a>. <br>
+Il fallait proposer un plan d'action pour assurer la sécurité cybernétique du Togo.</p>
+
+<h3 id="prambule">Préambule</h3>
+
+<p>Parmi les menaces majeures auxquelles la plupart des États du monde sont confrontés en ce 21ème siècle, nous avons l’attaque informatique de grande envergure contre les infrastructures nationales. Ce constat a conduit le Gouvernement à décider de renforcer significativement les capacités nationales en matière de cyberdéfense. <br>
+Le présent document  est une proposition de plan d’action pour la défense et la sécurité des systèmes d’information du Togo. </p>
+
+<h3 id="informationsensibilisationauxmenacescyberntiques">Information, sensibilisation aux menaces cybernétiques</h3>
+
+<p>La sécurité des systèmes d’information repose tant sur la vigilance personnelle que sur l’organisation, les choix et mesures techniques portés par les entreprises et l’action des États. <br>
+Assurer une meilleure défense, c’est avant tout informer les utilisateurs des risques qui peuvent survenir lors de l’utilisation de tout matériel informatique, car quelque soit la protection d’un système informatique, la faille humaine peut causer des dégâts importants. <br>
+Devant les conséquences potentielles d’une attaque majeure contre les systèmes d’information sur la vie du pays et de ses citoyens, la sensibilisation et la motivation des personnes et des organisations doivent être assurées. <br>
+Un soutien devra être apporté aux décideurs afin de les aider à élaborer les mesures et à prendre les décisions nécessaires en matière de sécurité des systèmes d’information essentiels au bon fonctionnement de leurs organisations et à la protection de leur patrimoine technique, scientifique, commercial ou financier. </p>
+
+<h3 id="miseenplaceduncadrejuridiquecohrent">Mise en place d’un cadre juridique cohérent</h3>
+
+<p>Les nouveaux usages portés par le développement du cyberespace peuvent, si l’on n’est suffisamment vigilant, présenter des dangers pour nos libertés individuelles, le fonctionnement des infrastructures vitales ou l’équilibre de nos entreprises. Notre cadre législatif et réglementaire doit suivre l’évolution des techniques. Les textes seront adaptés en fonction de l’apparition de nouvelles technologies ou de nouveaux usages, afin de renforcer la sécurité des particuliers. <br>
+Notre pays doit militer pour la mise en place d’un cadre juridique régional avec ses partenaire de la CEDEAO et participer aux réflexions internationales pour la mise en place de telles structures de mannière à être capable de punir toute attaque dont l’origine n’est pas nationale.</p>
+
+<h3 id="crationdunestructuredesurveillancedepreventionetdedfensecyberntique">Création d’une structure de surveillance, de prevention et de défense cybernétique</h3>
+
+<p>Risques et menaces évoluent rapidement dans le cyberespace. La parution d’un nouveau produit ou d’une nouvelle version d’un logiciel, <br>
+la publication d’une faille non corrigée d’un logiciel largement utilisé, l’apparition d’une nouvelle technologie ou d’un nouvel usage, une déclaration politique, peuvent entraîner, dans des délais très courts, une mise en danger de la sécurité des systèmes d’information. <br>
+Dans ce contexte, la défense et la sécurité de nos systèmes d’information passe en premier lieu par un suivi de l’actualité des technologies et par une analyse, une bonne compréhension voire une anticipation du jeu des acteurs publics ou privés. <br>
+Aussi nous proposons la création d’une cellule informatique constituée d’expert en sécurité cybernétique pour nous permettre : <strong>d’anticiper, d’analyser, alerter, détecter et réagir</strong> face aux menaces du cyberespace. <br>
+Compte-tenu de la dépendance croissante à Internet des entreprises, des infrastructures et des services, et en raison des risques systémiques portés par certaines faiblesses, il est nécessaire d’être en mesure de détecter au plus tôt failles et attaques, d’alerter les victimes potentielles ou avérées et de leur proposer dans un délai bref une aide à l’analyse et à l’élaboration de parades. <br>
+Il faut donc que notre pays développe une capacité de détection des attaques sur les systèmes d’information. Notamment déployés dans les réseaux des ministères, des dispositifs permettent d’alerter leurs responsables, d’aider à élucider la nature des attaques et d’élaborer des parades adaptées. <br>
+Pour gérer l’ensemble des informations recueillies par les outils de détection, par les dispositifs de veille ou transmises par nos partenaires, afin de présenter une image en temps réel de la situation des réseaux nationaux et pour être capable de gérer une situation de crise, la “cellule informatique crée” devra se doter d’une « salle d’opération » à la hauteur des enjeux.</p>
+
+<h3 id="formationveilletechnologiquerecherches">Formation, veille technologique, recherches</h3>
+
+<p>La sécurité des systèmes d’information repose sur une maîtrise de technologies et de savoir-faire, également accessibles aux organisations et individus qui veulent y porter atteinte. Si les acteurs étatiques de la sécurité des systèmes d’information doivent connaître « l’état de l’art », ils doivent également être en mesure d’anticiper voire de créer les évolutions technologiques en maintenant leurs capacités de recherche, seules capables de permettre de limiter l’avantage tactique de l’attaquant sur le défenseur. <br>
+Nous devons mettre en place un centre de recherche de niveau mondial  Ce centre mènera des activités de recherche scientifique (recherche en cryptologie, étude des groupes d’attaquants et de leurs méthodes, expertise sur les logiciels malveillants et les failles informatiques, développement de logiciels libres sécurisés, élaboration de concepts de défense informatique, etc.), et des actions d’expertise et de formation. Un fonds devra être prévu pour la formation d’experts nationaux en cybersécurité. </p>
+
+<h3 id="protgerlessystmesdinformationdeltatetdesoprateursdinfrastructuresvitales">Protéger les systèmes d’information de l’État et des opérateurs d’infrastructures vitales</h3>
+
+<p>Nous devons disposer « d’une offre de produits de très haute sécurité totalement maîtrisés, pour la protection des secrets de l’État, ainsi que d’une offre de produits et de services de confiance labellisés, à laquelle recourront les administrations et qui seront largement accessibles au secteur économique ». Des réseaux sécurisés résilients pour  « l’ensemble de la chaîne de décision et de commandement sur le territoire national» doivent être utilisés. <br>
+Dans les réseaux ministériels, la mise en place de systèmes d’authentification forte reposant, par exemple, sur l’utilisation de cartes à puce va permettre d’en améliorer très significativement la sécurité. <br>
+Dans le domaine de la sécurité des systèmes d’information des opérateurs d’importance vitale, un partenariat public-privé sera mis en place afin, d’une part, de faire profiter les opérateurs de l’information dont dispose l’État en matière d’analyse des menaces, et d’autre part, de permettre à l’État de s’assurer que les infrastructures essentielles au bon fonctionnement de la Nation disposent d’un niveau de protection adéquat. </p>
+
+<h3 id="dvelopperlacollaborationinternationale">Développer la collaboration internationale</h3>
+
+<p>La sécurité des systèmes d’information repose en partie sur la qualité de l’échange d’informations entre les services compétents des divers États. Le Togo cherchera à établir un large tissu de partenaires étrangers afin de favoriser le partage des données essentielles, comme, par exemple, les informations concernant les vulnérabilités ou les failles des produits et services. Elle renforcera également ses échanges avec ses partenaires en matière de lutte contre la cybercriminalité. De la même manière, les relations fortes entre alliés sont la base d’une cyber defense efficace. Il faudra construire un cercle très restreint de partenaires de confiance avec lesquels des échanges opérationnels très approfondis seront menés.</p>
+
+<h3 id="scuritphysique">Sécurité physique</h3>
+
+<p>Mis à part l’aspect logiciel ou logique qu’une attaque cybernétique peut prendre, il faut considérer aussi la sécurité physique, le support sur lequel notre réseau est établi. Les installations des infrastructures  TIC devront bénéficier d’une sécurité adéquate en fonction du risque encourus et des impacts sur d’autres services. Les postes de travail devront être protégés et éteint lorsqu’ils ne sont pas utilisés. Les câbles de transmission téléphonique, les fibres optiques devront bénéficier d’une bonne sécurité afin qu’un sabotage ne puisse mettre a mal la compétivité de notre pays.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>Ce plan, s’il est suivi devrait permettre au Togo d’être un tant soit peu en sécurité dans l’espace cybernétique, le risque zéro n’existant pas, ce document pourrait être modifier pour parer aux nouvelles menaces et même aux insuffisances de cette version du document.</p>]]></content:encoded></item><item><title><![CDATA[Retour sur le social good summit Abidjan 2014]]></title><description><![CDATA[<p>Le 22 septembre 2014 s'est tenu à Abidjan,à l'espace évènementiel Latrille event des deux plateaux, le social good summit 2014, rencontre organisée par le pnud en partenariat avec akendewa <br>
+et des organisations de la jeunesse de Côte d'Ivoire, à laquelle j'étais présent en tant que représentant du <a href="https://sites.google.com/site/gdgmiagegi/presentation">GDG MIAGE</a></p>]]></description><link>http://localhost:2368/2014/09/23/retour-sur-le-social-good-summit-abidjan-2014/</link><guid isPermaLink="false">755521be-0621-408d-847c-9f30c00875a0</guid><category><![CDATA[social]]></category><category><![CDATA[evènement]]></category><category><![CDATA[leadership]]></category><category><![CDATA[bien social]]></category><category><![CDATA[civsocial]]></category><category><![CDATA[akendewa]]></category><category><![CDATA[autonomisation des femmes]]></category><category><![CDATA[internet]]></category><dc:creator><![CDATA[Komi Serge Innocent]]></dc:creator><pubDate>Tue, 23 Sep 2014 10:44:00 GMT</pubDate><content:encoded><![CDATA[<p>Le 22 septembre 2014 s'est tenu à Abidjan,à l'espace évènementiel Latrille event des deux plateaux, le social good summit 2014, rencontre organisée par le pnud en partenariat avec akendewa <br>
+et des organisations de la jeunesse de Côte d'Ivoire, à laquelle j'étais présent en tant que représentant du <a href="https://sites.google.com/site/gdgmiagegi/presentation">GDG MIAGE <br>
+GI</a>, j'en ai profité auss pour parler de <a href="https://ovillage.ci">Ovillage</a>, un <br>
+tiers-lieu que je fréquente plus ou moins régulièrement :smile:.Je me propose donc de vous faire un résumé de cette journée, comme si vous y <br>
+étiez!!</p>
+
+<p>!<a href="http://localhost:2368/2014/09/23/retour-sur-le-social-good-summit-abidjan-2014/{{ site.baseurl }}/images/sgs14.jpg">Social good summit Abidjan 2014</a></p>
+
+<p>Prévue initialement pour 9h selon le programme de la journée, c'est à 10h30 que les activités de cette journée sur le bien social ont <br>
+débuté, je n'ai pas réglé ma montre sur l'heure africaine pour être à l'heure malheureusement (cela m'apprendra la prochaine <br>
+fois....:sweat_smile:) .</p>
+
+<p>Cette journée s'est essentiellement déroulée en trois parties, la première partie a été une mise en contexte du thème de ce sommet pour <br>
+le bien social et une opportunité pour les mouvements et associtions présentes de parler de leur expérience dans l'adresage de <br>
+problématiques sociétales avec les TIC.J'ai eu à intervenir à ce niveau donc pour parler des activités et réalisations du <a href="https://sites.google.com/site/gdgmiagegi/presentation">GDG MIAGE <br>
+GI</a> dont je vous fait grâce dans ce post!</p>
+
+<p>Les représentant du pnud chargé des OMD( Objectifs du milénaire pour le développement), du minstre du plan et du développement durable, <br>
+de la jeunesse de Côte d'Ivoire, d'Akendewa et de la société civile ont animé un panel pour faire l'état des lieux sur l'accès aux TIC <br>
+et médias sociaux en Côte d'Ivoire, l'occasion pour akendewa de partager avec nous l'expérience de <strong>CIVSOCIAL</strong> avec à la clef un <br>
+témoignage d'une dame ayant bénéficié de cette action sociale.</p>
+
+<iframe id="player" type="text/html" width="640" height="390" src="http://www.youtube.com/embed/UFnwHKjPBVw?enablejsapi=1" frameborder="0"></iframe>
+
+<p>Cette première partie du programme qui a permis de faire l'état des lieux sur l'accès aux TIC a servi de matière pour la réflexion dans <br>
+les différents ateliers, trois pour être précis, qui ont suivi. <br>
+Les ateliers ont porté sur les thèmes suivants:</p>
+
+<ol>
+<li><strong>Société civile et nouvelles responsabilités: concilier bien-être social et accès aux technologies et nouveaux médias</strong>  </li>
+<li><strong>Éducation des adolescents et des jeunes à travers l'accès aux technologies et nouveaux médias en Côte d'Ivoire</strong>  </li>
+<li><strong>Utilisation de la technologie et des nouveaux médias pour la réduction de la pauvreté à travers l'autonomisation de la femme et des jeunes en Côte d'Ivoire</strong></li>
+</ol>
+
+<p>Les travaux ont duré quelques deux heures et demi, j'ai quand à moi participé aux travaux de l'atelier 3 sur l'autonomisation de la <br>
+femme et des jeunes.J'ai eu à intervenir pour donner mon avis sur comment les femmes et les jeunes pouvaient parvenir à <br>
+l'autonomisation et réduire ainsi la pauvreté.Je détaillerais mes approches de solution dans un autre post (celui-ci devient <br>
+kilométrique j'avoue :cry:).En résumé, j'ai parlé de l'importance de l'entrepreneuriat et l'importance de tiers-lieu comme <br>
+<a href="https://ovillage.ci">Ovillage</a> dans un processus d'autonomisation; occasion pour moi de présenter les activités de ce lieu 
+formidables, les différents projets qui y sont réalisés comme <strong>mpregnancy</strong>(pour le suivi des grossesses) par exemple et les inviter à <br>
+apporter leur pierre à l'édifice.</p>
+
+<p>Cette fuctueuse journée d'échange s'est terminée autour d'un cocktail aux alentours de 16h, occasion pour les participants discuter <br>
+entre eux, tisser de nouvelles relations et discuter de projets innovants pour le bien social en Côte d'Ivoire!</p>]]></content:encoded></item><item><title><![CDATA[Accès simplifié aux données avec Spring data]]></title><description><![CDATA[<h3 id="prsentationdespringdata">Présentation de spring data</h3>
+
+<p><a href="http://projects.spring.io/spring-data">Spring data</a> est un projet cadre dont le but est de réduire la complexité des couches d'accès
+aux données.Il contient un <a href="http://projects.spring.io/spring-data/#toc_0">portfolio de projets</a> <br>
+permettant d'adresser au mieux chaque type de base de données, allant des bases de données relationnelles à ceux de la mouvance</p>]]></description><link>http://localhost:2368/2014/09/18/acces-simplifie-aux-donnees-avec-spring-data/</link><guid isPermaLink="false">f7d8cb5d-f38d-4cc7-9dc6-daf0e308f9b3</guid><category><![CDATA[java]]></category><category><![CDATA[spring]]></category><category><![CDATA[spring data]]></category><category><![CDATA[base de données]]></category><category><![CDATA[dao]]></category><dc:creator><![CDATA[Komi Serge Innocent]]></dc:creator><pubDate>Thu, 18 Sep 2014 10:36:00 GMT</pubDate><content:encoded><![CDATA[<h3 id="prsentationdespringdata">Présentation de spring data</h3>
+
+<p><a href="http://projects.spring.io/spring-data">Spring data</a> est un projet cadre dont le but est de réduire la complexité des couches d'accès
+aux données.Il contient un <a href="http://projects.spring.io/spring-data/#toc_0">portfolio de projets</a> <br>
+permettant d'adresser au mieux chaque type de base de données, allant des bases de données relationnelles à ceux de la mouvance NoSql. <br>
+Il permet notamment de s'affranchir de l'implémentation du pattern <br>
+<a href="http://fr.wikipedia.org/wiki/Objet_d'acc%C3%A8s_aux_donn%C3%A9es">DAO</a> utilisé dans la plupart des projets pour encapsuler l'accés aux
+données.</p>
+
+<h3 id="leproblmeaveclesdaohttpwwworaclecomtechnetworkjavadataaccessobject138824html">Le problème avec les <a href="http://www.oracle.com/technetwork/java/dataaccessobject-138824.html">DAO</a></h3>
+
+<p>Alors, c'est bien beau, on veut s'affranchir de l'implémentation des DAO, mais quel est au juste le problème avec les DAO et dont <br>
+spring data nous offre la solution? Eh bien si vous avez jamais développé une application avec accès aux bases de données, vous avez <br>
+sans doute souffert de l'écriture des méthodes permettant d'effectuer des opérations sur les bases de données, les fameux CRUD <br>
+(Create,Read,Update,Delete), des plus simples au plus complexes. Pour chaque entité(représentant une table dans la base de données), il faut
+écrire les méthodes d'accés au bases qui pour la plupart à des différences près se ressemblent toutes. Ce qui fait qu'un des problèmes
+majeur au niveau des DAO est le code répétitif que celà implique.</p>
+
+<p>Un exemple de DAO :  </p>
+
+<pre><code class="language-prettyprint">    @Override
+    public List&lt;Speaker&gt; findAll() {
+        return em.createQuery("select s from Speaker s",
+                 Speaker.class).getResultList();
+    }
+
+    @Override
+    public List&lt;Speaker&gt; findByLastname(String lastname, int page, int pageSize) {
+        TypedQuery&lt;Speaker&gt; query = em.createQuery("select s from Speaker s
+                where s.lastname = ?1", Speaker.class);
+
+        query.setParameter(1, lastname);
+        query.setFirstResult(page * pageSize);
+        query.setMaxResults(pageSize);
+
+        return query.getResultList();
+    }
+</code></pre>
+
+<p>Cet exemple est tiré du code présenté lors de ma présentation de spring data lors du <a href="http://jcertif.com/cotedivoire/">JCertif Abidjan 2014</a>.</p>
+
+<h2 id="lasolutiondespringdata">La solution de spring data</h2>
+
+<p>Dans l'exemple précédent,à part les requêtes d'interrogation de la base de données, le traitement est pareil <br>
+quelque soit la méthode d'accès aux données: récupération des résultats de la requêtes, traitements(pagination et autre..) retour du <br>
+résultat. Dans une moindre mesure les requêtes aussi peuvent comporter des parties redondantes mis à part les noms des entités. Et <br>
+lorsque les requêtes deviennent de plus en plus complexe,le développeur perd du temps sur le code d'accés aux données que de <br>
+se concentrer sur la logique métier de son application.</p>
+
+<p>Avec spring data, le code présenté plus haut revient à ceci:  </p>
+
+<pre><code class="language-prettyprint">public interface SpeakerRepository extends CrudRepository&lt;Speaker, Long&gt;{  
+    Page&lt;Speaker&gt; findByLastname(String lastname, Pageable pageable);
+}
+</code></pre>
+
+<p>Euh...c'est tout? Vous vous demandez sûrement si je me moque de vous n'est-ce pas? En fait, c'est tout, spring data nous permet de <br>
+faire abstraction de l'implémentation de nos DAO, c'est là toute la magie de spring data, il s'occupe de générer le code pour nous!Les <br>
+méthodes basique de CRUD sont intégrés dans l'api de spring data, ce qui explique que nous ayons juste une seule méthode dans le code <br>
+maintenant.</p>
+
+<p>Grosso modo, spring data permet d'éviter les codes répétitifs ds DAO,écrire facilement des requêtes d'accès aux données complexe, <br>
+permet une bonne gestion de la pagination et surtout, facilite la vie des développeurs avec un peu de magie en rendant le code plus <br>
+simple,facile à tester.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Ce post est juste une introduction à spring data, une petite ouverture sur ce qu'il est possible de faire avec. Je vous prépare bientôt <br>
+une série de tutoriels pour sa prise en main, on est ensemble ;)</p>
+
+<p>Mais déjà, voici une liste de ressources pour en savoir plus sur ce magnifique projet :</p>
+
+<p><a href="http://docs.spring.io/spring-data/jpa/docs/1.7.0.RELEASE/reference/html/">spring data doc</a>,
+<a href="http://spring.io/guides/gs/accessing-data-jpa/">spring data guide</a>,
+<a href="https://github.com/Centonni/jcertif2014-spring-data">ma présenation sur github</a>.</p>]]></content:encoded></item></channel></rss>
