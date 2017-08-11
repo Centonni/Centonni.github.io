@@ -24,9 +24,9 @@ author:
   bio: Développeur java/java EE | Formateur pour @objisci | Enthousiaste de l'Open source et de l'économie du libre | All things about java,spring,groovy
   email_md5: 0f6e262f82d057e17d5faa2aaf4a9a50
 
-rss_path: feed.xml
-categories_path: categories.html
-tags_path: tags.html
+  rss_path: feed
+categories_path: categories
+tags_path: tags
 
 BASE_PATH: #http://www.centonni.com
 
