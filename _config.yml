@@ -1,0 +1,39 @@
+# visit https://github.com/mojombo/jekyll/wiki/Configuration for more settings
+
+paginate: 5 # pagination based on number of posts
+paginate_path: "page:num"
+exclude: ["README.md"] # files to exclude
+highlighter: pygments
+markdown: kramdown
+permalink: /:title/
+
+title: Komi Serge Innocent
+description: Développeur java
+disqus: centonni
+
+# Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
+google_analytics: UA-50638672-1
+
+author:
+  name: Komi Serge Innocent
+  email: komi.innocent@gmail.com
+  github: centonni
+  twitter: centonni
+  #pinterest: asd123
+  #linkedin: asd123
+  bio: Développeur java/java EE | Formateur pour @objisci | Enthousiaste de l'Open source et de l'économie du libre | All things about java,spring,groovy
+  email_md5: 0f6e262f82d057e17d5faa2aaf4a9a50
+
+rss_path: feed.xml
+categories_path: categories.html
+tags_path: tags.html
+
+BASE_PATH: #http://www.centonni.com
+
+
+# Exclude these files from your production _site
+exclude:
+    - Gemfile
+    - Gemfile.lock
+    - LICENSE
+    - README.md
