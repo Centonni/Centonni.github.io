@@ -9,7 +9,7 @@ Chaque version de java apporte son lot de nouveautés et java 8 n'échappe pas �
 
 Ce billet va parler d'un des apports de java 8 que sont ***les Streams*** et qui croyez moi devraient grandement simplifier la vie des développeurs java et bien sûr être apprécié de bon nombre de développeurs habitués à des langages comme ***groovy***,***scala*** et autres ***langages à paradigme fonctionnels***
 
-###Les streams, qu'est ce que c'est?
+### Les streams, qu'est ce que c'est?
 Les streams sont un ajout à la plateforme java depuis la version 8 qui permettent de manipuler des structures de données de manière déclarative, plutôt que d'écrire ou implémenter en dur un code pour le faire (impératif).Et en plus, ils permettent d'effectuer des tâches en parallèle de manière transparente sans pour autant avoir besoin de créer un processus dédié (**Thread**).
 
 Un bon bout de code vaut mieux que de longues explications n'est-ce pas? Alors supposons que pour une collection de noms donnée,

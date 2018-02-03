@@ -82,7 +82,7 @@ System.out.println(chaine.toString()); //affiche {un,deux,trois}
 
  Le code est toujours moins verbeux par rapport aux deux  premiers exemples.Le séparateur, le suffixe et le préfixe défini lors de l'instanciation de notre **StringJoiner** nous permettent de nous concentrer juste sur l'ajout des données,la séparation des données et l'ajout des délimiteurs de début et de fin sont gérés notre **StringJoiner**.
 
-###Limite de la classe StringJoiner
+### Limite de la classe StringJoiner
 
 Ce nouvel ajout est des plus intéressant pour java mais on découvre vite les limites lorsqu'on veut l'utiliser à fond. Prenons un exemple simple, supposons qu'on veuille passer une liste de String à formatter, la méthode pour le faire est la suivante :
 
@@ -110,6 +110,6 @@ chaine.join(list);
 
 {% endhighlight %}
 
-###Conclusion
+### Conclusion
 
 Les nouveaux ajouts pour la manipulation des chaînes de caractères en java sont assez intéressants, bien qu'à mon avis beaucoup plus aurait pu être fait, l'utilisation de **StringJoiner** me laisse toujours avec un goût d'inachevé...je ne sais pas trop pourquoi :/
