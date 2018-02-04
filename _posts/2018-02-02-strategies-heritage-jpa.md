@@ -100,3 +100,55 @@ public class Personne {
     // constructeur, getters, setters
 }
 {% endhighlight java %}
+
+Au niveau des classes filles (entités), aucun changement n'est requis.
+
+#### Discriminator
+Dans cette stratégie, toutes les classes entités sont mappées dans une unique table. JPA a besoin de faire la différences entre les différences lignes de la table ainsi mappée afin de pouvoir convertir chaque enregistrement vers la classe entité correspondante.
+
+Pour ce faire, JPA utilise un mécanisme permettant de faire cette différence en créant une colomne appelée `discriminator` qui ne fait pas partie des attributs de l'entité mappée.
+
+
+{% highlight java %}
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE_PERSONNE")
+public class Personne {
+ 
+    @Id
+    protected  long Id;
+    protected  String nom;
+    protected  String prenom;
+ 
+    // constructeur, getters, setters
+}
+{% endhighlight java %}
+
+Une colonne sera créé dans la table générée ayant pour valeur `TYPE_PERSONNE` pour différencier les enregistrements des entités `Etudiant` et `Formateur`.
+
+Par défaut, les valeurs de la colonne `TYPE_PERSONNE` seront les noms des classes filles. Pour présicer le nom à enregistrer, on ajoute l'annotation `@DiscriminatorValue` sur les classes filles.
+
+
+{% highlight java %}
+@Entity
+@DiscriminatorValue("etu")
+public class Etudiant extends Personne {
+ 
+    private double note;
+ 
+    // constructeur, getters, setters
+}
+{% endhighlight java %}
+
+
+{% highlight java %}
+@Entity
+@DiscriminatorValue("form")
+public class Formateur extends Personne {
+ 
+    private String matiere;
+ 
+    // constructeur, getters, setters
+}
+{% endhighlight java %}
+
